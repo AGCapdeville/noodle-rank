@@ -2,28 +2,10 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
-import './App.css'
 import styled from 'styled-components'
-import Fuse from 'fuse.js';
-import noodleData from './data/noodle_products.json';
 
+import RamenSearch from './RamenSearch.tsx';
 
-const options = {
-  keys: ['Product Name', 'Brand'],
-  threshold: 0.3,
-  // Optimization: only index the fields you are searching to save memory
-  findAllMatches: false,
-};
-
-const fuse = new Fuse(noodleData, options);
-
-export function searchRamen(query) {
-  if (!query) return [];
-  // Fuse handles the large array in milliseconds
-  console.log(fuse.search(query).map(result => result.item));
-
-  // return fuse.search(query).map(result => result.item);
-}
 
 //create a styled component here
 const HeroSection = styled.div`
@@ -35,23 +17,6 @@ const HeroSection = styled.div`
   justify-content: center;
   font-size: 2rem;
   font-weight: bold;
-`;
-
-const SearchBar = styled.div`
-  width: 100vw;
-  height: 10vh;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  input {
-    width: 50%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-  }
 `;
 
 const TopRankedRamen = styled.div`
@@ -85,9 +50,7 @@ function App() {
         Noodle Rank
       </HeroSection>
 
-      <SearchBar>
-        <input type="text" placeholder="Search for ramen..." onChange={(e) => searchRamen(e.target.value)} />
-      </SearchBar>
+      <RamenSearch/>
 
       <TopRankedRamen>
 
