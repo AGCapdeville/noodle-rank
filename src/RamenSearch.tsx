@@ -22,7 +22,7 @@ function searchRamen(query: string):
     if (!query) return [];
 
     // Fuse handles the large array in milliseconds   
-    let fr = fuse.search(query);
+    let fr = fuse.search(query, { limit: 10 });
     fr.slice(0,10);
 
     console.log(fr);
@@ -38,25 +38,28 @@ const SearchBarSection = styled.div`
 `;
 
 const SearchBar = styled.input`
-  width: 90%;
-  height: 10vh;
-  color: black;
-  background-color: #e0e0e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 70%;
+    height: 30px;
+    color: black;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    outline: none;
 
-  input {
-    width: 90%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-  }
+    font-size: large;
+
+    input {
+        width: 90%;
+        padding: 0.5rem;
+        font-size: 1rem;
+        border: none;
+        border-radius: 4px;
+    }
 `;
 
 const SearchResults = styled.div`
-  width: 90%;
+  width: 100%;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
@@ -66,26 +69,34 @@ const SearchResults = styled.div`
   position: relative;
 `;
 
-const SearchDropdown = styled.div`
-    top: 0;
-    width: 90%;
-    background-color: #f0f0f0;
+interface SearchDropdown {
+    $isVisible: boolean;
+}
+
+const SearchDropdown = styled.div<SearchDropdown>`
+    display: ${props => (props.$isVisible ? 'flex' : 'none')};
+
+    top: 1px;
+    width: 70%;
+    height: 30vh;
+    
+    background-color: black;
     align-items: center;
     justify-content: left;
-    display: flex;
     flex-direction: column;
     position: absolute;
 `;
 
 const SearchItem = styled.div`
-    width: 90%;
+    width: 100%;
     height: 50px;
-    background-color: grey;
+    background-color: white;
     align-items: center;
     justify-content: center;
     display: flex;
-    margin: 0.5rem 0;
-    border-radius: 8px;
+    &:hover {
+        background-color: lightblue;
+    }
 `;
 
 export default function RamenSearch() {
@@ -94,11 +105,20 @@ export default function RamenSearch() {
     const [debouncedQuery, setDebouncedQuery] = useState(""); // Tracks the "delayed" version
     const [results, setResults] = useState<FuseResult<{ "Product Name": string; Brand: string; Style: string; }>[]>([]); // Tracks the search results    
 
+    const [isVisible, setIsVisible] = useState(false);
+
     // 1. This effect handles the timer logic
     useEffect(() => {
         const timer = setTimeout(() => {
             setDebouncedQuery(query);
-        }, 300); // 300ms "wait" period
+            if (results.length > 0) {
+                setIsVisible(true);
+            }
+        }, 100);
+
+        if (query.length == 0) {
+            setResults([])
+        }
 
         // 2. This is the cleanup function. It kills the timer if the user types again 
         // before the 300ms is up.
@@ -108,33 +128,36 @@ export default function RamenSearch() {
     // 3. This effect only runs when the "delayed" query changes
     useEffect(() => {
         if (debouncedQuery) {
-            console.log("Searching for:", debouncedQuery);
+            // console.log("Searching for:", debouncedQuery);
             // Run your Fuse.js search here!
             let t = searchRamen(debouncedQuery);
-            console.log(t);
+            // console.log(t);
             setResults(t);
         }
     }, [debouncedQuery]);
 
     return (
         <SearchBarSection>
+
             <SearchBar
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onBlur={() => setResults([])}
                 placeholder="Search ramen..."
             />
             
             <SearchResults>
                 {/* Render search results here */}
                 
-                <SearchDropdown>
+                <SearchDropdown $isVisible={isVisible}>
                     {results.map((r) => (
                         <SearchItem>
                             {r.item.Brand + " | " + r.item['Product Name'] + " | " + r.item.Style}
                         </SearchItem>
                     ))}
                 </SearchDropdown>
+
             </SearchResults>
         </SearchBarSection>
     );

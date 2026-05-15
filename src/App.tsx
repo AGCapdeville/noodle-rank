@@ -49,34 +49,14 @@ function App() {
       <HeroSection>
         Noodle Rank
       </HeroSection>
-
-      <RamenSearch/>
-
-      <TopRankedRamen>
-
-        <TopRankedRamenItem>
-          1. Ichiran Ramen
-        </TopRankedRamenItem>
-
-        <TopRankedRamenItem>
-          2. Ippudo Ramen
-        </TopRankedRamenItem>
-
-        <TopRankedRamenItem>
-          3. Ramen Nagi
-        </TopRankedRamenItem>
-        
-      </TopRankedRamen>
-        
-
-      {/* <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button> */}
-
       
+      <div style={{display:'flex', justifyContent:'center'}}>
+        Rate That Ramen:
+      </div>
+
+      <div style={{display:'flex', flexDirection:'column', paddingTop:'10px'}}>
+        <RamenSearch/>
+      </div>
 
     </>
   )
